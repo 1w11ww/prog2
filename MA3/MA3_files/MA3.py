@@ -47,15 +47,22 @@ def sphere_volume_parallel1(n,d,np=10):
     with future.ProcessPoolExecutor() as ex:
         processes = [ex.submit(sphere_volume, n, d) for _ in range(np)]
         results = [p.result() for p in processes]
-    stop = pc()
     avg = sum(results) / len(results)
+    stop = pc()
     print(f"Parallel time of {d} and {n}: {stop-start}\nAverage value: {avg}")
     return avg
 
 #Ex4: parallel code - parallelize actual computations by splitting data
 def sphere_volume_parallel2(n,d,np=10):
-
-    return
+    start = pc()
+    with future.ProcessPoolExecutor() as ex:
+        chunks = [n//np for _ in range(np)]
+        dim = [d for _ in range(np)]
+        results = list(ex.map(sphere_volume, chunks, dim))
+    avg = sum(results) / len(results)
+    stop = pc()
+    print(f"Parallel time of {d} and {n}: {stop-start}\nAverage value: {avg}")
+    return avg
     
 def main():
     #Ex1
@@ -87,6 +94,7 @@ def main():
     print(f"Ex3: Sequential time of {d} and {n}: {stop-start}")
     print(f"Average value: {sum(values) / len(values)}")
     sphere_volume_parallel1(n, d, 10)
+    #running sphere_volume_parallel1 on the linux servers was about as fast as on my computer ~1.5s, the sequential time was longer on the server though (~8s vs ~3s on my pc)
     
 
     #Ex4
@@ -96,7 +104,7 @@ def main():
     sphere_volume(n,d)
     stop = pc()
     print(f"Ex4: Sequential time of {d} and {n}: {stop-start}")
-    print("What is parallel time?")
+    sphere_volume_parallel2(n, d, 10)
 
     
     
